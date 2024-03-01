@@ -4,7 +4,9 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -16,35 +18,47 @@ public class User {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
-    @Column(name = "username", nullable = false)
+    @Column(name = "username",
+            nullable = false)
     private String username;
 
-    @Column(name = "password", nullable = false)
+    @Column(name = "password",
+            nullable = false)
     private String password;
 
-    @Column(name = "fullname", nullable = false)
+    @Column(name = "fullname",
+            nullable = false)
     private String fullName;
 
-    @Column(name = "dateofbirth", nullable = false)
+    @Column(name = "dateofbirth",
+            nullable = false)
     private Date dateOfBirth;
 
-    @Column(name = "amount",nullable = false)
+    @Column(name = "amount",
+            nullable = false)
     private Double amount;
 
     @ElementCollection
-    @CollectionTable(name = "user_phones", joinColumns = @JoinColumn(name = "user_id"))
-    @Column(name = "phone", nullable = false, unique = true)
+    @CollectionTable(name = "user_phones",
+            joinColumns = @JoinColumn(name = "user_id"))
+    @Column(name = "phone",
+            nullable = false,
+            unique = true)
     private List<String> phones = new ArrayList<>();
 
     @ElementCollection
-    @CollectionTable(name = "user_emails", joinColumns = @JoinColumn(name = "user_id"))
-    @Column(name = "email", nullable = false, unique = true)
+    @CollectionTable(name = "user_emails",
+            joinColumns = @JoinColumn(name = "user_id"))
+    @Column(name = "email",
+            nullable = false,
+            unique = true)
     private List<String> emails = new ArrayList<>();
 
     private transient List<Transactions> transactions;
 
-    @Transient
-    private Double initianalAmount = 0.0;
+    @Column(name = "initianalAmount",
+            nullable = false)
+    private Double initianalAmount;
     public void setPhones(List<String> phones) {
         this.phones = phones;
     }
@@ -57,7 +71,11 @@ public class User {
     public User() {
     }
 
-    public User(String username, String password, String fullName, Date dateOfBirth, List<String> phones, List<String> emails, Double amount) {
+    public User(String username, String password,
+                String fullName, Date dateOfBirth,
+                List<String> phones,
+                List<String> emails,
+                Double amount) {
         this.username = username;
         this.password = password;
         this.fullName = fullName;
@@ -65,7 +83,6 @@ public class User {
         this.phones = phones;
         this.emails = emails;
         this.amount = amount;
-        this.initianalAmount = amount;
     }
 
     @Override

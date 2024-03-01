@@ -9,7 +9,9 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.PostConstruct;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -21,11 +23,11 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    private final ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
+    private final ScheduledExecutorService scheduledExecutorService = Executors.
+            newSingleThreadScheduledExecutor();
 
     @PostMapping("/create")
     public ResponseEntity<User> createUser(@RequestBody User user) {
-        System.out.println("dfd");
         User users = userService.createUser(user.getUsername(),
                 user.getPassword(), user.getFullName(),
                 user.getDateOfBirth(), user.getPhones().get(0),
@@ -37,11 +39,13 @@ public class UserController {
     @PostConstruct
     public void startProcent() {
         int INTERVAL = 1;
-        scheduledExecutorService.scheduleAtFixedRate(userService.reload(), 0, INTERVAL, TimeUnit.MINUTES);
+        scheduledExecutorService.scheduleAtFixedRate(userService.reload(), 0,
+                INTERVAL, TimeUnit.MINUTES);
     }
 
     @PutMapping("/{userId}/update-contact-info")
-    public ResponseEntity<User> updateUserContactInfo(@PathVariable Long userId, @RequestBody Map<String, String> request) {
+    public ResponseEntity<User> updateUserContactInfo(@PathVariable Long userId,
+                                                      @RequestBody Map<String, String> request) {
         String type = request.get("type");
         String adding = request.get("adding");
         User user = userService.updateUserContactInfo(userId, type, adding);
@@ -50,7 +54,9 @@ public class UserController {
 
 
     @DeleteMapping("/{userId}/delete-contact-info")
-    public ResponseEntity<Void> deleteUserContactInfo(@PathVariable Long userId, @RequestParam String contactType, @RequestParam String delete) {
+    public ResponseEntity<Void> deleteUserContactInfo(@PathVariable Long userId,
+                                                      @RequestParam String contactType,
+                                                      @RequestParam String delete) {
         userService.deleteUserContactInfo(userId, contactType, delete);
         return ResponseEntity.noContent().build();
     }
@@ -63,7 +69,7 @@ public class UserController {
             @RequestParam(required = false) String email) {
 
         List<User> users = null;
-
+        System.out.println(dateOfBirth);
         if (dateOfBirth != null) {
             LocalDate dob = LocalDate.parse(dateOfBirth);
             users = userService.searchUsersByDateOfBirth(dob);
@@ -74,7 +80,7 @@ public class UserController {
         } else if (fullName != null) {
             users = userService.searchUsersByFullName(fullName);
         } else {
-            throw new IllegalArgumentException("No Filter");
+            throw new IllegalArgumentException("Нет фильтрации по данному запросу");
         }
 
         return ResponseEntity.ok(users);
