@@ -25,7 +25,8 @@ public class UserController {
 
     @PostMapping("/create")
     public ResponseEntity<User> createUser(@RequestBody User user) {
-        User users = userService.createUser(
+        System.out.println("dfd");
+        User users = userService.createUser(user.getUsername(),
                 user.getPassword(), user.getFullName(),
                 user.getDateOfBirth(), user.getPhones().get(0),
                 user.getEmails().get(0), user.getAmount());

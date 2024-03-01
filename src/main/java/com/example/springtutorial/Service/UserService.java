@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -22,50 +21,59 @@ public class UserService{
     @Autowired
     private UserRepository userRepository;
 
-    public User createUser( String password, String fullName, Date dateOfBirth, String phone, String email, Double amount) {
+    public User createUser(String username, String password, String fullName, Date dateOfBirth, String phone, String email, Double amount) {
         boolean isExistingUser = userRepository.findAll().stream()
                 .anyMatch(user -> user.getPhones().contains(phone) || user.getEmails().contains(email));
-
         if (isExistingUser) {
             throw new IllegalArgumentException("Пользователь с таким телефоном или почтой уже существует!");
         }
-
-        User user = new User(password, fullName, dateOfBirth, Collections.singletonList(phone), Collections.singletonList(email), amount);
+        User user = new User(username, password, fullName, dateOfBirth, Collections.singletonList(phone), Collections.singletonList(email), amount);
         return userRepository.save(user);
     }
 
     public User updateUserContactInfo(Long userId, String type, String addingInfo) {
         User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("User not found"));
-        if (type.equalsIgnoreCase("phone") || type.equalsIgnoreCase("email")) {
-            if ("phone".equalsIgnoreCase(type) && userRepository.findByPhones(addingInfo) == null) {
-                List<String> list = user.getPhones();
+
+        boolean isPhoneType = type.equalsIgnoreCase("phone");
+        boolean isEmailType = type.equalsIgnoreCase("email");
+
+        if (isPhoneType || isEmailType) {
+            boolean isAddingInfoAbsent = isPhoneType ? userRepository.findByPhones(addingInfo) == null : userRepository.findByEmails(addingInfo) == null;
+
+            if (isAddingInfoAbsent) {
+                List<String> list = isPhoneType ? user.getPhones() : user.getEmails();
                 list.add(addingInfo);
-                user.setPhones(list);
-            }
-            else if(userRepository.findByEmails(addingInfo) == null){
-                List<String> list = user.getEmails();
-                list.add(addingInfo);
-                user.setEmails(list);
+                if (isPhoneType) {
+                    user.setPhones(list);
+                } else {
+                    user.setEmails(list);
+                }
             }
         }
+
         return userRepository.save(user);
     }
 
-    public void deleteUserContactInfo(Long userId, String contactType,String delete) {
+    public void deleteUserContactInfo(Long userId, String contactType, String delete) {
         User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("User not found"));
-        if(contactType.equalsIgnoreCase("phone") || contactType.equalsIgnoreCase("email")) {
-            if ("phone".equalsIgnoreCase(contactType) && user.getPhones().size() != 1) {
-                List<String> phone = user.getPhones();
-                phone.remove(delete);
-                user.setPhones(phone);
-            } else if ("email".equalsIgnoreCase(contactType) && user.getEmails().size() != 1) {
-                List<String> emails = user.getEmails();
-                emails.remove(delete);
-                user.setEmails(emails);
+
+        if (contactType.equalsIgnoreCase("phone") || contactType.equalsIgnoreCase("email")) {
+            List<String> listToDeleteFrom = contactType.equalsIgnoreCase("phone") ? user.getPhones() : user.getEmails();
+
+            if (listToDeleteFrom.size() != 1) {
+                listToDeleteFrom.removeIf(info -> info.equals(delete));
+
+                if (contactType.equalsIgnoreCase("phone")) {
+                    user.setPhones(listToDeleteFrom);
+                } else {
+                    user.setEmails(listToDeleteFrom);
+                }
             }
         }
+
         userRepository.save(user);
     }
+
 
     public void withdraw(Long accountId, double amount){
         User user = userRepository.findById(accountId)
@@ -102,6 +110,7 @@ public class UserService{
                 double oldBalance = users.getAmount();
                 double newBalance = oldBalance * PROCENT;
                 System.out.println(newBalance);
+                System.out.println(users.getInitianalAmount());
                 users.setAmount(newBalance);
                 userRepository.save(users);
             }
@@ -111,5 +120,6 @@ public class UserService{
     public Runnable reload() {
         return this::updateBalances;
     }
+
 
 }

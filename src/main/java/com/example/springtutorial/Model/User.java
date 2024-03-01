@@ -4,9 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Entity
 @Table(name = "users")
@@ -17,6 +15,9 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
+
+    @Column(name = "username", nullable = false)
+    private String username;
 
     @Column(name = "password", nullable = false)
     private String password;
@@ -56,7 +57,8 @@ public class User {
     public User() {
     }
 
-    public User( String password, String fullName, Date dateOfBirth, List<String> phones, List<String> emails, Double amount) {
+    public User(String username, String password, String fullName, Date dateOfBirth, List<String> phones, List<String> emails, Double amount) {
+        this.username = username;
         this.password = password;
         this.fullName = fullName;
         this.dateOfBirth = dateOfBirth;
@@ -70,6 +72,7 @@ public class User {
     public String toString() {
         return "User{" +
                 "id=" + id +
+                ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
                 ", fullName='" + fullName + '\'' +
                 ", dateOfBirth=" + dateOfBirth +
