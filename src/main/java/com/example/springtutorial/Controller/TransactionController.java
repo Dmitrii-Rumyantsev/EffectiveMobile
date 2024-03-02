@@ -16,25 +16,22 @@ public class TransactionController {
     private TransactionService transactionService;
 
     @PostMapping("/{accountId}/withdraw")
-    public ResponseEntity<String> withdraw(@PathVariable Long accountId,
-                                           @RequestParam Double amount) {
+    public ResponseEntity<String> withdraw(@PathVariable Long accountId, @RequestParam double amount) {
         try {
             userService.withdraw(accountId, amount);
-            return ResponseEntity.ok("Вы сняли деньги");
+            return ResponseEntity.ok("Withdraw successful");
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body("Недостаточно средств");
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
     @PostMapping("/transfer")
-    public ResponseEntity<String> transfer(@RequestParam Long fromAccountId,
-                                           @RequestParam Long toAccountId,
-                                           @RequestParam Double amount) {
+    public ResponseEntity<String> transfer(@RequestParam Long fromAccountId, @RequestParam Long toAccountId, @RequestParam double amount) {
         try {
             transactionService.operationTransaction(fromAccountId, toAccountId, amount);
-            return ResponseEntity.ok("Перевод денег совершен");
+            return ResponseEntity.ok("Transfer successful");
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body("У вас недостаточно средств для перевода");
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 }

@@ -5,7 +5,6 @@ import com.example.springtutorial.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.Date;
@@ -13,43 +12,33 @@ import java.util.List;
 
 @Service
 @Transactional
-public class UserService {
+public class UserService{
+
+
+    private final double PROCENT = 1.05;
+    private final double MAX_PROCENT = 2.07;
 
     @Autowired
     private UserRepository userRepository;
 
-    public User createUser(String username, String password,
-                           String fullName, Date dateOfBirth,
-                           String phone, String email,
-                           Double amount) {
-
+    public User createUser(String username, String password, String fullName, Date dateOfBirth, String phone, String email, Double amount) {
         boolean isExistingUser = userRepository.findAll().stream()
                 .anyMatch(user -> user.getPhones().contains(phone) || user.getEmails().contains(email));
-
         if (isExistingUser) {
             throw new IllegalArgumentException("Пользователь с таким телефоном или почтой уже существует!");
         }
-
-        User user = new User(username, password, fullName,
-                dateOfBirth, Collections.singletonList(phone),
-                Collections.singletonList(email), amount);
-        user.setInitianalAmount(amount);
+        User user = new User(username, password, fullName, dateOfBirth, Collections.singletonList(phone), Collections.singletonList(email), amount);
         return userRepository.save(user);
     }
 
     public User updateUserContactInfo(Long userId, String type, String addingInfo) {
-
-        User user = userRepository.findById(userId).orElseThrow(
-                () -> new IllegalArgumentException("User not found")
-        );
+        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         boolean isPhoneType = type.equalsIgnoreCase("phone");
         boolean isEmailType = type.equalsIgnoreCase("email");
 
         if (isPhoneType || isEmailType) {
-            boolean isAddingInfoAbsent = isPhoneType ?
-                    userRepository.findByPhones(addingInfo) == null :
-                    userRepository.findByEmails(addingInfo) == null;
+            boolean isAddingInfoAbsent = isPhoneType ? userRepository.findByPhones(addingInfo) == null : userRepository.findByEmails(addingInfo) == null;
 
             if (isAddingInfoAbsent) {
                 List<String> list = isPhoneType ? user.getPhones() : user.getEmails();
@@ -66,14 +55,10 @@ public class UserService {
     }
 
     public void deleteUserContactInfo(Long userId, String contactType, String delete) {
-        User user = userRepository.findById(userId).orElseThrow(
-                () -> new IllegalArgumentException("User not found")
-        );
+        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        if (contactType.equalsIgnoreCase("phone")
-                || contactType.equalsIgnoreCase("email")) {
-            List<String> listToDeleteFrom = contactType.equalsIgnoreCase("phone") ?
-                    user.getPhones() : user.getEmails();
+        if (contactType.equalsIgnoreCase("phone") || contactType.equalsIgnoreCase("email")) {
+            List<String> listToDeleteFrom = contactType.equalsIgnoreCase("phone") ? user.getPhones() : user.getEmails();
 
             if (listToDeleteFrom.size() != 1) {
                 listToDeleteFrom.removeIf(info -> info.equals(delete));
@@ -111,8 +96,7 @@ public class UserService {
     }
 
     public List<User> searchUsersByDateOfBirth(LocalDate dateOfBirth) {
-        Date dateOfBirthDate = java.sql.Date.valueOf(dateOfBirth);
-        return userRepository.findAllByDateOfBirth(dateOfBirthDate);
+        return userRepository.findAllByDateOfBirth(dateOfBirth);
     }
 
     public List<User> searchUsersByFullName(String fullName) {
@@ -122,9 +106,9 @@ public class UserService {
     public void updateBalances() {
         List<User> user = userRepository.findAll();
         for (User users : user) {
-            double oldBalance = users.getInitianalAmount() * 2.07;
-            double newBalance = users.getAmount() * 1.05;
-            if (oldBalance > newBalance) {
+            if (users.getInitianalAmount() * MAX_PROCENT < users.getAmount() * PROCENT) {
+                double oldBalance = users.getAmount();
+                double newBalance = oldBalance * PROCENT;
                 users.setAmount(newBalance);
                 userRepository.save(users);
             }
@@ -134,4 +118,6 @@ public class UserService {
     public Runnable reload() {
         return this::updateBalances;
     }
+
+
 }
