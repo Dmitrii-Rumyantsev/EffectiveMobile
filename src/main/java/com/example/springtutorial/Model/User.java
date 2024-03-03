@@ -43,8 +43,9 @@ public class User {
 
     private transient List<Transactions> transactions;
 
-    @Transient
-    private Double initianalAmount = 0.0;
+    @Column(name = "initialAmount")
+    private Double initialAmount;
+
     public void setPhones(List<String> phones) {
         this.phones = phones;
     }
@@ -68,7 +69,7 @@ public class User {
         this.phones = phones;
         this.emails = emails;
         this.amount = amount;
-        this.initianalAmount = amount;
+        this.initialAmount = amount;
     }
 
     @Override

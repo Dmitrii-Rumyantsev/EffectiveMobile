@@ -3,6 +3,7 @@ package com.example.springtutorial.Service;
 import com.example.springtutorial.Model.User;
 import com.example.springtutorial.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -12,7 +13,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Service
-@Transactional
+@EnableScheduling
 public class UserService{
 
 
@@ -30,6 +31,7 @@ public class UserService{
         if (isExistingUser) {
             throw new IllegalArgumentException("Пользователь с таким телефоном или почтой уже существует!");
         }
+        user.setInitialAmount(user.getAmount());
         user.setPassword(encoder.encode(user.getPassword()));
         return userRepository.save(user);
     }
@@ -106,14 +108,15 @@ public class UserService{
         return userRepository.findAllByFullName(fullName);
     }
 
-    @Scheduled(fixedRate = 60_000)
+    @Transactional
+    @Scheduled(fixedRate = 1_000)
     public void updateBalances() {
         System.out.println("Start");
         List<User> user = userRepository.findAll();
         for (User users : user) {
-            if (users.getInitianalAmount() * MAX_PROCENT < users.getAmount() * PROCENT) {
-                double oldBalance = users.getAmount();
-                double newBalance = oldBalance * PROCENT;
+            double oldBalance = users.getInitialAmount();
+            double newBalance = users.getAmount() * PROCENT;
+            if (oldBalance * MAX_PROCENT > newBalance) {
                 users.setAmount(newBalance);
                 userRepository.save(users);
             }
