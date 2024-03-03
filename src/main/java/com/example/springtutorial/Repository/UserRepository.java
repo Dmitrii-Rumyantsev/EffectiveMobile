@@ -12,6 +12,9 @@ import java.util.List;
 public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificationExecutor<User> {
     User findByPhones(String phones);
     User findByEmails(String emails);
+
+    User findByUsername(String username);
+
     List<User> findAllByFullName(String  fullname);
     List<User> findAllByDateOfBirth(LocalDate dateOfBirth);
 }

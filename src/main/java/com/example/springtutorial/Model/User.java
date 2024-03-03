@@ -57,7 +57,10 @@ public class User {
     public User() {
     }
 
-    public User(String username, String password, String fullName, Date dateOfBirth, List<String> phones, List<String> emails, Double amount) {
+    public User(String username, String password,
+                String fullName, Date dateOfBirth,
+                List<String> phones, List<String> emails,
+                Double amount) {
         this.username = username;
         this.password = password;
         this.fullName = fullName;

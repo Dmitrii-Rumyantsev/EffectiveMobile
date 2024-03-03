@@ -3,11 +3,12 @@ package com.example.springtutorial.Service;
 import com.example.springtutorial.Model.User;
 import com.example.springtutorial.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.time.LocalDate;
-import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 @Service
@@ -21,13 +22,15 @@ public class UserService{
     @Autowired
     private UserRepository userRepository;
 
-    public User createUser(String username, String password, String fullName, Date dateOfBirth, String phone, String email, Double amount) {
+    @Autowired
+    private PasswordEncoder encoder;
+    public User createUser(User user) {
         boolean isExistingUser = userRepository.findAll().stream()
-                .anyMatch(user -> user.getPhones().contains(phone) || user.getEmails().contains(email));
+                .anyMatch(users -> user.getPhones().contains(user.getPhones()) || user.getEmails().contains(user.getEmails()));
         if (isExistingUser) {
             throw new IllegalArgumentException("Пользователь с таким телефоном или почтой уже существует!");
         }
-        User user = new User(username, password, fullName, dateOfBirth, Collections.singletonList(phone), Collections.singletonList(email), amount);
+        user.setPassword(encoder.encode(user.getPassword()));
         return userRepository.save(user);
     }
 
@@ -103,7 +106,9 @@ public class UserService{
         return userRepository.findAllByFullName(fullName);
     }
 
+    @Scheduled(fixedRate = 60_000)
     public void updateBalances() {
+        System.out.println("Start");
         List<User> user = userRepository.findAll();
         for (User users : user) {
             if (users.getInitianalAmount() * MAX_PROCENT < users.getAmount() * PROCENT) {
@@ -114,10 +119,4 @@ public class UserService{
             }
         }
     }
-
-    public Runnable reload() {
-        return this::updateBalances;
-    }
-
-
 }

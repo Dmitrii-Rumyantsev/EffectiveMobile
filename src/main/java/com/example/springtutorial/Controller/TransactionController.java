@@ -1,9 +1,12 @@
 package com.example.springtutorial.Controller;
 
+import com.example.springtutorial.Security.Service.UserDetailsImpl;
+import com.example.springtutorial.Security.Service.UserDetailsServiceImpl;
 import com.example.springtutorial.Service.TransactionService;
 import com.example.springtutorial.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -14,11 +17,15 @@ public class TransactionController {
     private UserService userService;
     @Autowired
     private TransactionService transactionService;
+    @Autowired
+    private UserDetailsServiceImpl userDetails;
 
-    @PostMapping("/{accountId}/withdraw")
-    public ResponseEntity<String> withdraw(@PathVariable Long accountId, @RequestParam double amount) {
+    @PostMapping("/withdraw")
+    public ResponseEntity<String> withdraw(@RequestParam double amount, Authentication authentication) {
         try {
-            userService.withdraw(accountId, amount);
+            String username = authentication.getName();
+            UserDetailsImpl users = userDetails.loadUserByUsername(username);
+            userService.withdraw(users.getId(), amount);
             return ResponseEntity.ok("Withdraw successful");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -26,9 +33,11 @@ public class TransactionController {
     }
 
     @PostMapping("/transfer")
-    public ResponseEntity<String> transfer(@RequestParam Long fromAccountId, @RequestParam Long toAccountId, @RequestParam double amount) {
+    public ResponseEntity<String> transfer(@RequestParam Long toAccountId, @RequestParam double amount, Authentication authentication) {
         try {
-            transactionService.operationTransaction(fromAccountId, toAccountId, amount);
+            String username = authentication.getName();
+            UserDetailsImpl users = userDetails.loadUserByUsername(username);
+            transactionService.operationTransaction(users.getId(), toAccountId, amount);
             return ResponseEntity.ok("Transfer successful");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());

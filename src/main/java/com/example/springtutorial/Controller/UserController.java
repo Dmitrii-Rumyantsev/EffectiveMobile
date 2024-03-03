@@ -1,57 +1,54 @@
 package com.example.springtutorial.Controller;
 
 import com.example.springtutorial.Model.User;
+import com.example.springtutorial.Security.Service.UserDetailsImpl;
+import com.example.springtutorial.Security.Service.UserDetailsServiceImpl;
 import com.example.springtutorial.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.PostConstruct;
 import java.time.LocalDate;
-import java.util.*;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/users")
 public class UserController {
 
+
     @Autowired
     private UserService userService;
 
-    private final ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
+    @Autowired
+    private UserDetailsServiceImpl userDetails;
 
     @PostMapping("/create")
     public ResponseEntity<User> createUser(@RequestBody User user) {
-        System.out.println("dfd");
-        User users = userService.createUser(user.getUsername(),
-                user.getPassword(), user.getFullName(),
-                user.getDateOfBirth(), user.getPhones().get(0),
-                user.getEmails().get(0), user.getAmount());
+        User users = userService.createUser(user);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(users);
     }
-
-    @PostConstruct
-    public void startProcent() {
-        int INTERVAL = 1;
-        scheduledExecutorService.scheduleAtFixedRate(userService.reload(), 0, INTERVAL, TimeUnit.MINUTES);
-    }
-
-    @PutMapping("/{userId}/update-contact-info")
-    public ResponseEntity<User> updateUserContactInfo(@PathVariable Long userId, @RequestBody Map<String, String> request) {
+    @PutMapping("/update-contact-info")
+    public ResponseEntity<User> updateUserContactInfo(@RequestBody Map<String, String> request, Authentication authentication) {
         String type = request.get("type");
         String adding = request.get("adding");
-        User user = userService.updateUserContactInfo(userId, type, adding);
+        String username = authentication.getName();
+        UserDetailsImpl users = userDetails.loadUserByUsername(username);
+        User user = userService.updateUserContactInfo(users.getId(), type, adding);
         return ResponseEntity.ok(user);
     }
 
 
-    @DeleteMapping("/{userId}/delete-contact-info")
-    public ResponseEntity<Void> deleteUserContactInfo(@PathVariable Long userId, @RequestParam String contactType, @RequestParam String delete) {
-        userService.deleteUserContactInfo(userId, contactType, delete);
+    @DeleteMapping("/delete-contact-info")
+    public ResponseEntity<Void> deleteUserContactInfo(@RequestParam String contactType, @RequestParam String delete, Authentication authentication) {
+        String username = authentication.getName();
+        UserDetailsImpl users = userDetails.loadUserByUsername(username);
+        userService.deleteUserContactInfo(users.getId(), contactType, delete);
         return ResponseEntity.noContent().build();
     }
 
@@ -79,6 +76,7 @@ public class UserController {
 
         return ResponseEntity.ok(users);
     }
+
 
 
 }
