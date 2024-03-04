@@ -25,7 +25,7 @@ public class AuthController {
 
     @GetMapping("/sigin")
     public String welcome() {
-        return "Welcome this endpoint is not secure";
+            return "Вы успешно авторизовались!";
     }
 
     @PostMapping("/generateToken")

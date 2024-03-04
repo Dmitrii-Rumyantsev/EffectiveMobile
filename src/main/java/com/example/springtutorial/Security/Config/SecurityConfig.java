@@ -40,7 +40,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/auth/generateToken","/users/create").permitAll() // Разрешить доступ к эндпоинтам аутентификации
+                .antMatchers("/auth/generateToken","/users/create","/swagger-ui.html").permitAll() // Разрешить доступ к эндпоинтам аутентификации
                 .anyRequest().authenticated() // Все остальные запросы требуют аутентификации
                 .and()
                 .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class); // Добавить фильтр для обработки JWT токенов

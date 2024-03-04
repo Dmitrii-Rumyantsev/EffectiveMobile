@@ -109,9 +109,8 @@ public class UserService{
     }
 
     @Transactional
-    @Scheduled(fixedRate = 1_000)
+    @Scheduled(fixedRate = 60_000)
     public void updateBalances() {
-        System.out.println("Start");
         List<User> user = userRepository.findAll();
         for (User users : user) {
             double oldBalance = users.getInitialAmount();

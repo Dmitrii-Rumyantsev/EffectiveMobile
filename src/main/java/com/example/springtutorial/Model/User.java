@@ -30,7 +30,6 @@ public class User {
 
     @Column(name = "amount",nullable = false)
     private Double amount;
-
     @ElementCollection
     @CollectionTable(name = "user_phones", joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "phone", nullable = false, unique = true)
