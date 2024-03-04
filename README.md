@@ -9,20 +9,28 @@
 - PostgresSQL
 - JUnit
 ## Создание нового пользователя
-![image](https://github.com/Dmitrii-Rumyantsev/EffectiveMobile/assets/108349340/2ea146cc-9031-4714-a9d5-3d1c1be2d989)
+![Создание](https://github.com/Dmitrii-Rumyantsev/EffectiveMobile/assets/108349340/ddc6da28-5f81-4e2e-b907-0408c0aaff4e)
+
+
+
 
 ## Тест поиск по имени
-![image](https://github.com/Dmitrii-Rumyantsev/EffectiveMobile/assets/108349340/aa39dd04-a131-4c7f-8837-9258889ada76)
+![По имени поиск](https://github.com/Dmitrii-Rumyantsev/EffectiveMobile/assets/108349340/ff09bca5-0b89-4282-8527-2a75711ff2c9)
+
 ## Тест поиск по номеру
-![image](https://github.com/Dmitrii-Rumyantsev/EffectiveMobile/assets/108349340/ee5e3445-d2c8-493c-9f19-ff832aad43ac)
+![Поиск по номер](https://github.com/Dmitrii-Rumyantsev/EffectiveMobile/assets/108349340/96b647b3-f20e-4eab-b2cf-e33ef4eeea12)
+
 ## Добалвение новой почты
-![image](https://github.com/Dmitrii-Rumyantsev/EffectiveMobile/assets/108349340/f28d068a-8df0-44e5-8b3c-f5627da58920)
+![Добавление почты](https://github.com/Dmitrii-Rumyantsev/EffectiveMobile/assets/108349340/f5a91f4a-2123-4e7a-bcf7-a01b0816988c)
+
 ## Удаление почты
 ![image](https://github.com/Dmitrii-Rumyantsev/EffectiveMobile/assets/108349340/d3447ba5-ba6a-4575-bf04-0c0e20fdf6e9)
 ## Перевод денег с одного счет на другой
-![image](https://github.com/Dmitrii-Rumyantsev/EffectiveMobile/assets/108349340/dfe73d41-29fb-484c-ad48-3c509e146d95)
+![Транзакция](https://github.com/Dmitrii-Rumyantsev/EffectiveMobile/assets/108349340/b46569e1-d16b-4be5-8e06-d0b7c85d0b4a)
+
 ## Снятие денег
-![image](https://github.com/Dmitrii-Rumyantsev/EffectiveMobile/assets/108349340/5e439243-4130-4093-8c9c-f15211a78e33)
+![Снятие денег](https://github.com/Dmitrii-Rumyantsev/EffectiveMobile/assets/108349340/b058b57d-309a-48f9-8259-1f608f7d8523)
+
 ## Авторизация при помощи Jwt токена
 <img width="866" alt="image" src="https://github.com/Dmitrii-Rumyantsev/EffectiveMobile/assets/108349340/86c8518b-bcb0-4374-b95d-85014c4c1334">
 <img width="863" alt="image" src="https://github.com/Dmitrii-Rumyantsev/EffectiveMobile/assets/108349340/ef2ad07e-63a3-460f-8491-f97b0a87b60d">
